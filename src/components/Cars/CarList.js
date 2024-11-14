@@ -1,8 +1,9 @@
 // src/components/Cars/CarList.js
 import React, { useState, useEffect } from 'react';
 import axios from '../../services/api';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import SearchBar from './SearchBar';
+import { Container, Typography, Grid, Card, CardContent, CardActions, Button, Box } from '@mui/material';
 
 const CarList = () => {
     const [cars, setCars] = useState([]);
@@ -39,21 +40,42 @@ const CarList = () => {
         }
     };
 
-    console.log(cars)
-
     return (
-        <div>
-            <h2>My Cars</h2>
+        <Container maxWidth="lg">
+            <Box sx={{ marginTop: 4, marginBottom: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h4">My Cars</Typography>
+                <Button variant="contained" color="primary" component={RouterLink} to="/cars/new">
+                    Add New Car
+                </Button>
+            </Box>
             <SearchBar onSearch={handleSearch} />
-            <Link to="/cars/new">Add New Car</Link>
-            <ul>
+            <Grid container spacing={3} sx={{ marginTop: 2 }}>
                 {cars.map((car) => (
-                    <li key={car.ID}>
-                        <Link to={`/cars/${car.ID}`}>{car.title}</Link>
-                    </li>
+                    <Grid item xs={12} sm={6} md={4} key={car.ID}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="div">
+                                    {car.title}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {car.description.substring(0, 100)}...
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button size="small" component={RouterLink} to={`/cars/${car.ID}`}>
+                                    View Details
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
                 ))}
-            </ul>
-        </div>
+                {cars.length === 0 && (
+                    <Typography variant="body1" sx={{ marginTop: 2 }}>
+                        No cars found.
+                    </Typography>
+                )}
+            </Grid>
+        </Container>
     );
 };
 

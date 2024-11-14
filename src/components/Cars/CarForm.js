@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { TextField, Button, Container, Typography, Paper, Grid, Box, Chip } from '@mui/material';
 
 const CarForm = () => {
   const { id } = useParams();
   const isEdit = Boolean(id);
-  const navigate = useNavigate(); // Replace useHistory with useNavigate
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -22,7 +23,6 @@ const CarForm = () => {
         try {
           const response = await axios.get(`/api/cars/${id}`);
           const car = response.data;
-          console.log(car);
           setForm({
             title: car.title,
             description: car.description,
@@ -89,51 +89,86 @@ const CarForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} encType="multipart/form-data">
-      <h2>{isEdit ? "Edit Car" : "Add New Car"}</h2>
-      <input
-        type="text"
-        name="title"
-        placeholder="Title"
-        value={form.title}
-        onChange={handleChange}
-        required
-      />
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={form.description}
-        onChange={handleChange}
-      />
-      <input
-        type="text"
-        name="tags"
-        placeholder="Tags (comma-separated)"
-        value={form?.tags}
-        onChange={handleChange}
-      />
-      {isEdit && existingImages?.length > 0 && (
-        <div>
-          <h3>Existing Images</h3>
-          {existingImages.map((img, index) => (
-            <img
-              key={index}
-              src={img}
-              alt={`Existing ${index + 1}`}
-              width="100"
-            />
-          ))}
-        </div>
-      )}
-      <input
-        type="file"
-        name="images"
-        multiple
-        accept="image/*"
-        onChange={handleImageChange}
-      />
-      <button type="submit">{isEdit ? "Update Car" : "Create Car"}</button>
-    </form>
+    <Container maxWidth="md">
+      <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
+        <Typography variant="h5" component="h2" gutterBottom>
+          {isEdit ? "Edit Car" : "Add New Car"}
+        </Typography>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Title"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Description"
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Tags (comma-separated)"
+                name="tags"
+                value={form.tags}
+                onChange={handleChange}
+              />
+            </Grid>
+            {isEdit && existingImages?.length > 0 && (
+              <Grid item xs={12}>
+                <Typography variant="subtitle1">Existing Images</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {existingImages.map((img, index) => (
+                    <Box key={index} sx={{ position: 'relative' }}>
+                      <img
+                        src={img}
+                        alt={`Existing ${index + 1}`}
+                        width="100"
+                        style={{ borderRadius: '4px' }}
+                      />
+                      {/* Optionally, add delete functionality for existing images */}
+                    </Box>
+                  ))}
+                </Box>
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <Button variant="contained" component="label">
+                Upload Images
+                <input
+                  type="file"
+                  name="images"
+                  multiple
+                  accept="image/*"
+                  hidden
+                  onChange={handleImageChange}
+                />
+              </Button>
+              <Typography variant="body2" color="textSecondary" sx={{ marginTop: 1 }}>
+                You can upload up to 10 images.
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" type="submit">
+                {isEdit ? "Update Car" : "Create Car"}
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 
